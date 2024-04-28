@@ -34,8 +34,10 @@ export default function AppLayout({
           },
         }}
       >
-        <body className={`${inter.className} bg-dark-2`}>{children}</body>
-        <Toaster />
+        <body className={`${inter.className} bg-dark-2`}>
+          {children}
+          <Toaster />
+        </body>
       </ClerkProvider>
     </html>
   );
