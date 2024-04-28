@@ -6,6 +6,7 @@ import { StreamCall, StreamTheme } from "@stream-io/video-react-sdk";
 import Loader from "@/components/loader";
 import { useState } from "react";
 import MeetingSetup from "@/components/meeting-setup";
+import MeetingRoom from "@/components/meeting-room";
 
 export default function Meeting({ params: { id } }: { params: { id: string } }) {
   const { user, isLoaded } = useUser();
@@ -21,7 +22,7 @@ export default function Meeting({ params: { id } }: { params: { id: string } }) 
           {!isSetupComplete ? (
             <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
           ) : (
-            <h1>Meeting Room</h1>
+            <MeetingRoom />
           )}
         </StreamTheme>
       </StreamCall>
