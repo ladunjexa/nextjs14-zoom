@@ -53,13 +53,14 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
 
         setRecordings(recordings);
       } catch (error) {
-        toast({ type: "error", message: "Failed to fetch recordings" });
+        toast({ title: "Failed to fetch recordings" });
       }
     };
 
     if (type === "recordings") {
       fetchRecordings();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, callRecordings]);
 
   const calls = getCalls();

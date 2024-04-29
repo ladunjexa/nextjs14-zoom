@@ -7,6 +7,7 @@ import Loader from "@/components/loader";
 import { useState } from "react";
 import MeetingSetup from "@/components/meeting-setup";
 import MeetingRoom from "@/components/meeting-room";
+import Alert from "@/components/alert";
 
 export default function Meeting({ params: { id } }: { params: { id: string } }) {
   const { user, isLoaded } = useUser();
@@ -14,6 +15,13 @@ export default function Meeting({ params: { id } }: { params: { id: string } }) 
   const { call, isCallLoading } = useGetCallById(id);
 
   if (!isLoaded || isCallLoading) return <Loader />;
+
+  if (!call) return <p className="text-center text-3xl font-bold text-white">Call Not Found</p>;
+
+  const notAllowed =
+    call.type === "invited" && (!user || !call.state.members.find(m => m.user.id === user.id));
+
+  if (notAllowed) return <Alert title="You are not allowed to join this meeting" />;
 
   return (
     <div className="h-screen w-full">
