@@ -3,12 +3,14 @@
 import useGetCalls from "@/hooks/use-get-calls";
 import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import MeetingCard from "./meeting-card";
 import Loader from "./loader";
+import { useToast } from "./ui/use-toast";
 
 const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
   const router = useRouter();
+  const { toast } = useToast();
   const { endedCalls, upcomingCalls, callRecordings, isLoading } = useGetCalls();
   const [recordings, setRecordings] = React.useState<CallRecording[]>([]);
 
@@ -38,6 +40,28 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchRecordings = async () => {
+      try {
+        const callData = await Promise.all(
+          callRecordings.map(meeting => meeting.queryRecordings())
+        );
+
+        const recordings = callData
+          .filter(call => call.recordings.length > 0)
+          .flatMap(call => call.recordings);
+
+        setRecordings(recordings);
+      } catch (error) {
+        toast({ type: "error", message: "Failed to fetch recordings" });
+      }
+    };
+
+    if (type === "recordings") {
+      fetchRecordings();
+    }
+  }, [type, callRecordings]);
+
   const calls = getCalls();
   const noCallsMessage = getNoCallsMessage();
 
@@ -56,9 +80,13 @@ const CallList = ({ type }: { type: "ended" | "upcoming" | "recordings" }) => {
                   ? "/icons/upcoming.svg"
                   : "/icons/recordings.svg"
             }
-            title={(meeting as Call).state.custom.description.substring(0, 25) || "No description"}
+            title={
+              (meeting as Call).state?.custom.description.substring(0, 25) ||
+              (meeting as CallRecording).filename.substring(0, 25) ||
+              "No description"
+            }
             date={
-              (meeting as Call).state.startsAt?.toLocaleString() ||
+              (meeting as Call).state?.startsAt?.toLocaleString() ||
               (meeting as CallRecording).start_time?.toLocaleString()
             }
             isPreviousMeeting={type === "ended"}
