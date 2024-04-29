@@ -9,7 +9,7 @@ type MeetingModalProps = {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  className: string;
+  className?: string;
   children?: React.ReactNode;
   buttonText?: string;
   handleClick?: () => void;
